@@ -7,6 +7,13 @@ import java.util.*;
 
 public class Simulator {
 
+    private Queue<Event> queue = new PriorityQueue<>();
+    private int contRandoms = 0, lostClients = 0, queueManager = 0;
+    private double globalTime = 2.5;
+    private Map<Integer, Double> times = new HashMap<>();
+    private List<Double> timeList = new ArrayList<>();
+    private double actualTime;
+
     //Metodo principal baseado no algoritmo visto em aula:
 //    CHEGADA
 //    contabiliza tempo
@@ -22,92 +29,84 @@ public class Simulator {
 //          ◦ agenda SAIDA(T+rnd(3..6))
     //Será impresso:
     //As configurações de fila, semente, Tempo da simulação, total de chegadas e saídas junto ao total de clientes perdidos.
-    public OutData runSimulation(String fileName, int seed) throws IOException {
-        double simulationStartTime = System.nanoTime() / Math.pow(10,9);
-        Queue<Event> queue = new PriorityQueue<>();
+    public void runSimulation(String fileName, int seed) throws IOException {
+
         QueueModel model = Reader.readFile(fileName);
-        Generator generator = new Generator(seed, 100000);
-        int contRandoms = 0, lostClients = 0, queueManager = 0, totalArrivals = 0, totalExits = 0;
+        Generator generator = new Generator(seed, 20);
+
         System.out.println("=============================================================");
         System.out.println("Fila: " + model.getInDistribution() + "/" + model.getOutDistribution() + "/" + model.getServers() + "/" + model.getClients());
         System.out.println("Chegada: " + model.getInTimeStart() + "..." + model.getInTimeEnd());
         System.out.println("Atendimento: " + model.getOutTimeStart() + "..." + model.getOutTimeEnd());
         System.out.println("Semente: " + seed);
 
-        //Será gerado um arquivo texto com a sequência inteira de eventos da simulação
-        //Ao final, serão dois arquivos contento a sequência dos dois arquivos de entrada
-        PrintWriter eventsSequence = new PrintWriter(new File(fileName + "-eventsSequence.txt"));
-
+        timeList.add(globalTime);
         while (contRandoms < generator.getRandoms().size()) {
             if (queue.isEmpty()) {
-                double startTime = System.nanoTime() / Math.pow(10,9);
-                if (queueManager < model.getClients()) {
-                    queueManager++;
-                    if (queueManager <= model.getServers()) {
-                        double endtime = System.nanoTime() / Math.pow(10,9);
-                        double duration =  3 + generator.getNextIntBetween(model.getOutTimeStart(), model.getOutTimeEnd());
-                        Event event = new Event(Event.Type.EXIT, duration);
-                        queue.add(event);
-                        eventsSequence.println(event);
-                        totalExits++;
-                    }
-                    double endtime2 = System.nanoTime() / Math.pow(10,9);
-                    double duration2 = (endtime2 - startTime) + generator.getNextIntBetween(model.getInTimeStart(), model.getInTimeEnd());
-                    Event event = new Event(Event.Type.ARRIVAL, duration2);
-                    queue.add(event);
-                    eventsSequence.println(event);
-                    totalArrivals++;
-                } else {
-                    lostClients++;
-                }
+               manageArrival(model, generator);
+               timeList.add(queue.element().getTime());
             }
             if (queue.element().getType().equals(Event.Type.ARRIVAL)) {
+                manageArrival(model, generator);
+                globalTime = queue.element().getTime();
+                times.put(queueManager, globalTime - timeList.get(timeList.size() - 1));
+                timeList.add(globalTime);
                 queue.remove();
-                double startTime = System.nanoTime() / Math.pow(10,9);
-                if (queueManager < model.getClients()) {
-                    queueManager++;
-                    if (queueManager <= model.getServers()) {
-                        double endtime = System.nanoTime() / Math.pow(10,9);
-                        double duration =  (endtime - startTime) + generator.getNextIntBetween(model.getOutTimeStart(), model.getOutTimeEnd());
-                        Event event = new Event(Event.Type.EXIT, duration);
-                        queue.add(event);
-                        eventsSequence.println(event);
-                        totalExits++;
-                    }
-                    double endtime2 = System.nanoTime() / Math.pow(10,9);
-                    double duration2 = (endtime2 - startTime) + generator.getNextIntBetween(model.getInTimeStart(), model.getInTimeEnd());
-                    Event event = new Event(Event.Type.ARRIVAL, duration2);
-                    queue.add(event);
-                    eventsSequence.println(event);
-                    totalArrivals++;
-                } else {
-                    lostClients++;
-                }
             } else {
+                manageExit(model, generator);
+                globalTime = queue.element().getTime();
+                times.put(queueManager, globalTime - timeList.get(timeList.size() - 1));
+                timeList.add(globalTime);
                 queue.remove();
-                double startTime = System.nanoTime() / Math.pow(10, 9);
-                queueManager--;
-                if (queueManager >= model.getServers()) {
-                    double endtime = System.nanoTime() / Math.pow(10,9);
-                    double duration = (endtime - startTime) + generator.getNextIntBetween(model.getOutTimeStart(), model.getOutTimeEnd());
-                    Event event = new Event(Event.Type.EXIT, duration);
-                    queue.add(event);
-                    eventsSequence.println(event);
-                    totalExits++;
-                }
             }
             contRandoms++;
         }
-        double simulationTime = (System.nanoTime() / Math.pow(10,9)) - simulationStartTime;
-        System.out.println("Tempo total da simulação: " + simulationTime);
-        System.out.println("Total de chegadas agendadas: " + totalArrivals);
-        System.out.println("Total de saídas agendadas: " + totalExits);
+
+        System.out.println("Estado da fila: 0, Tempo: " + times.get(1) + ", Probabilidade: " + calculateProbability(globalTime, times.get(1)));
+        System.out.println("Global time: " + globalTime + ", " + times.get(1));
+        System.out.println("Estado da fila: 1, Tempo: " + times.get(2) + ", Probabilidade: " + calculateProbability(globalTime, times.get(2)));
+        System.out.println("Estado da fila: 2, Tempo: " + times.get(3) + ", Probabilidade: " + calculateProbability(globalTime, times.get(3)));
+        System.out.println("Estado da fila: 3, Tempo: " + times.get(4) + ", Probabilidade: " + calculateProbability(globalTime, times.get(4)));
         System.out.println("Total de clientes perdidos: " + lostClients);
         System.out.println("=============================================================");
-        System.out.println(" ");
-
-        return new OutData(simulationTime, lostClients);
 
     }
+
+    public void manageArrival(QueueModel model, Generator generator) {
+        double randArrival = generator.getNextIntBetween(model.getInTimeStart(), model.getInTimeEnd());
+        double randExit = generator.getNextIntBetween(model.getOutTimeStart(), model.getOutTimeEnd());
+
+        if (queueManager < model.getClients()) {
+            queueManager++;
+            if (queueManager <= model.getServers()) {
+                actualTime = randExit + globalTime;
+                Event event = new Event(Event.Type.EXIT, actualTime);
+                queue.add(event);
+                //System.out.println("Event: " + event);
+            }
+            actualTime = randArrival + globalTime;
+            Event event = new Event(Event.Type.ARRIVAL, actualTime);
+            queue.add(event);
+            //System.out.println("Event: " + event);
+        } else {
+            lostClients++;
+        }
+    }
+
+    public void manageExit(QueueModel model, Generator generator) {
+        double rand = generator.getNextIntBetween(model.getOutTimeStart(), model.getOutTimeEnd());
+        queueManager--;
+        if (queueManager >= model.getServers()) {
+            actualTime = rand + globalTime;
+            Event event = new Event(Event.Type.EXIT, actualTime);
+            queue.add(event);
+            //System.out.println("Event: " + event);
+        }
+    }
+
+    public double calculateProbability(double totalTime, double globalTime) {
+        return (globalTime * 100) / totalTime;
+    }
+
 }
 

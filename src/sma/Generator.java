@@ -6,11 +6,10 @@ import java.util.List;
 public class Generator {
 
     private List<Double> randoms;
-    private int counter;
+    private int counter = 0;
 
     //Aqui são informados os parametros para o cálculo da congruência linear
     public Generator(int x, int size) {
-        this.counter = counter;
         this.randoms = calculateCongruentLinear(4, x, 13, 9, size);
     }
 
@@ -32,24 +31,16 @@ public class Generator {
         return randoms;
     }
 
-    //Método para pegar um inteiro a partir de um aleatório decimal da lista e dado um intervalo
-    public int getNextIntBetween(int start, int end) {
-        String u = randoms.get(counter).toString();
-        if (counter > randoms.size() * 0.9) {
-            counter = 1;
-        }
-        for(int i = u.length(); i > 0; i--) {
-            if (u.charAt(i - 1) == '.') {
-                break;
-            }
-            int rand = Integer.parseInt(String.valueOf(u.charAt(i - 1)));
-            if (rand >= start && rand <= end) {
-                counter++;
-                return rand;
-            }
+    public double getNextIntBetween(int start, int end) {
+        double x;
+        if (counter == randoms.size()) {
+            return (end - start) * randoms.get(counter-1) + start;
+        } else {
+            x = (end - start) * randoms.get(counter) + start;
         }
         counter++;
-        return (start + end)/2;
+        return x;
+
     }
 
 
