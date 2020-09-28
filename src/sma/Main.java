@@ -11,7 +11,7 @@ public class Main {
         Simulator simulator = new Simulator();
         double sumClients1 = 0, sumTime1 = 0, sumclients2 = 0, sumTime2 = 0;
         int[] seeds = {3, 2, 5, 9, 1};
-        simulator.runSimulation("model1.txt", 3);
+        simulator.runSimulation("model3.txt", 9);
 
     }
 }

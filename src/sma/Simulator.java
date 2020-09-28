@@ -8,9 +8,11 @@ import java.util.*;
 public class Simulator {
 
     private Queue<Event> queue = new PriorityQueue<>();
-    private int contRandoms = 0, lostClients = 0, queueManager = 0;
+    private int contRandoms = 0, lostClients = 0, queue1Controller = 0, queue2Controller = 0;
     private double globalTime = 2.5;
-    private Map<Integer, Double> times = new HashMap<>();
+    private Map<Integer, Double> stateTimes1 = new HashMap<>();
+    private Map<Integer, Double> stateTimes2 = new HashMap<>();
+
     private List<Double> timeList = new ArrayList<>();
     private double actualTime;
 
@@ -31,42 +33,61 @@ public class Simulator {
     //As configurações de fila, semente, Tempo da simulação, total de chegadas e saídas junto ao total de clientes perdidos.
     public void runSimulation(String fileName, int seed) throws IOException {
 
-        QueueModel model = Reader.readFile(fileName);
-        Generator generator = new Generator(seed, 20);
+        List<QueueModel> models = Reader.readFile(fileName);
+        Generator generator = new Generator(seed, 100000);
+        QueueModel model1 = models.get(0);
+        QueueModel model2 = models.get(1);
 
         System.out.println("=============================================================");
-        System.out.println("Fila: " + model.getInDistribution() + "/" + model.getOutDistribution() + "/" + model.getServers() + "/" + model.getClients());
-        System.out.println("Chegada: " + model.getInTimeStart() + "..." + model.getInTimeEnd());
-        System.out.println("Atendimento: " + model.getOutTimeStart() + "..." + model.getOutTimeEnd());
+        System.out.println("Fila 1: " + model1.getInDistribution() + "/" + model1.getOutDistribution() + "/" + model1.getServers() + "/" + model1.getClients());
+        System.out.println("Fila 2: " + model2.getInDistribution() + "/" + model2.getOutDistribution() + "/" + model2.getServers() + "/" + model2.getClients());
+
+        System.out.println("Chegada: " + model1.getInTimeStart() + "..." + model1.getInTimeEnd());
+        System.out.println("Passagem: " + model1.getOutTimeStart() + "..." + model1.getOutTimeEnd());
+        System.out.println("Atendimento: " + model2.getOutTimeStart() + "..." + model2.getOutTimeEnd());
         System.out.println("Semente: " + seed);
+        System.out.println(" ");
 
         timeList.add(globalTime);
         while (contRandoms < generator.getRandoms().size()) {
             if (queue.isEmpty()) {
-               manageArrival(model, generator);
+               manageArrival(model1, generator);
                timeList.add(queue.element().getTime());
             }
             if (queue.element().getType().equals(Event.Type.ARRIVAL)) {
-                manageArrival(model, generator);
+                manageArrival(model1, generator);
                 globalTime = queue.element().getTime();
-                times.put(queueManager, globalTime - timeList.get(timeList.size() - 1));
+                stateTimes1.put(queue1Controller, globalTime - timeList.get(timeList.size() - 1));
                 timeList.add(globalTime);
                 queue.remove();
-            } else {
-                manageExit(model, generator);
+            }
+            else if (queue.element().getType().equals(Event.Type.PASSAGE)) {
+                managePassage(model1, model2, generator);
                 globalTime = queue.element().getTime();
-                times.put(queueManager, globalTime - timeList.get(timeList.size() - 1));
+                stateTimes1.put(queue1Controller, globalTime - timeList.get(timeList.size() - 1));
+                timeList.add(globalTime);
+                queue.remove();
+
+            } else {
+                manageExit(model2, generator);
+                globalTime = queue.element().getTime();
+                stateTimes2.put(queue2Controller, globalTime - timeList.get(timeList.size() - 1));
                 timeList.add(globalTime);
                 queue.remove();
             }
             contRandoms++;
         }
 
-        System.out.println("Estado da fila: 0, Tempo: " + times.get(1) + ", Probabilidade: " + calculateProbability(globalTime, times.get(1)));
-        System.out.println("Global time: " + globalTime + ", " + times.get(1));
-        System.out.println("Estado da fila: 1, Tempo: " + times.get(2) + ", Probabilidade: " + calculateProbability(globalTime, times.get(2)));
-        System.out.println("Estado da fila: 2, Tempo: " + times.get(3) + ", Probabilidade: " + calculateProbability(globalTime, times.get(3)));
-        System.out.println("Estado da fila: 3, Tempo: " + times.get(4) + ", Probabilidade: " + calculateProbability(globalTime, times.get(4)));
+        System.out.println("Estado da fila 1: 0, Tempo: " + formatNumber(stateTimes1.get(0)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, stateTimes1.get(0))) + " %");
+        System.out.println("Estado da fila 1: 1, Tempo: " + formatNumber(stateTimes1.get(1)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, stateTimes1.get(1))) + " %");
+        System.out.println("Estado da fila 1: 2, Tempo: " + formatNumber(stateTimes1.get(2)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, stateTimes1.get(2))) + " %");
+        System.out.println("Estado da fila 1: 3, Tempo: " + formatNumber(stateTimes1.get(3)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, stateTimes1.get(3))) + " %");
+        System.out.println("  ");
+        System.out.println("Estado da fila 2: 0, Tempo: " + formatNumber(stateTimes2.get(1)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, stateTimes2.get(1))) + " %");
+        System.out.println("Estado da fila 2: 1, Tempo: " + formatNumber(stateTimes2.get(2)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, stateTimes2.get(2))) + " %");
+        System.out.println("Estado da fila 2: 2, Tempo: " + formatNumber(stateTimes2.get(3)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, stateTimes2.get(3))) + " %");
+        System.out.println("Estado da fila 2: 3, Tempo: " + formatNumber(stateTimes2.get(4)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, stateTimes2.get(4))) + " %");
+
         System.out.println("Total de clientes perdidos: " + lostClients);
         System.out.println("=============================================================");
 
@@ -74,38 +95,59 @@ public class Simulator {
 
     public void manageArrival(QueueModel model, Generator generator) {
         double randArrival = generator.getNextIntBetween(model.getInTimeStart(), model.getInTimeEnd());
-        double randExit = generator.getNextIntBetween(model.getOutTimeStart(), model.getOutTimeEnd());
+        double randPassage = generator.getNextIntBetween(model.getOutTimeStart(), model.getOutTimeEnd());
 
-        if (queueManager < model.getClients()) {
-            queueManager++;
-            if (queueManager <= model.getServers()) {
-                actualTime = randExit + globalTime;
-                Event event = new Event(Event.Type.EXIT, actualTime);
+        if (queue1Controller < model.getClients()) {
+            queue1Controller++;
+            if (queue1Controller <= model.getServers()) {
+                actualTime = randPassage + globalTime;
+                Event event = new Event(Event.Type.PASSAGE, actualTime);
                 queue.add(event);
-                //System.out.println("Event: " + event);
             }
             actualTime = randArrival + globalTime;
             Event event = new Event(Event.Type.ARRIVAL, actualTime);
             queue.add(event);
-            //System.out.println("Event: " + event);
         } else {
             lostClients++;
         }
     }
 
+    public void managePassage(QueueModel model1, QueueModel model2, Generator generator) {
+        double randPassage = generator.getNextIntBetween(model1.getOutTimeStart(), model1.getOutTimeEnd());
+        double randExit = generator.getNextIntBetween(model2.getOutTimeStart(), model2.getOutTimeEnd());
+        queue1Controller--;
+        if (queue1Controller >= model1.getServers()) {
+            actualTime = randPassage + globalTime;
+            Event event = new Event(Event.Type.PASSAGE, actualTime);
+            queue.add(event);
+        }
+        if(queue2Controller < model2.getClients()) {
+            queue2Controller++;
+            if (queue2Controller <= model2.getServers()) {
+                actualTime = randExit + globalTime;
+                Event event = new Event(Event.Type.EXIT, actualTime);
+                queue.add(event);
+            }
+        }
+
+    }
+
     public void manageExit(QueueModel model, Generator generator) {
-        double rand = generator.getNextIntBetween(model.getOutTimeStart(), model.getOutTimeEnd());
-        queueManager--;
-        if (queueManager >= model.getServers()) {
-            actualTime = rand + globalTime;
+        double randExit = generator.getNextIntBetween(model.getOutTimeStart(), model.getOutTimeEnd());
+        queue2Controller--;
+        if (queue2Controller >= model.getServers()) {
+            actualTime = randExit + globalTime;
             Event event = new Event(Event.Type.EXIT, actualTime);
             queue.add(event);
-            //System.out.println("Event: " + event);
         }
     }
 
     public double calculateProbability(double totalTime, double globalTime) {
         return (globalTime * 100) / totalTime;
+    }
+
+    public String formatNumber(double n) {
+        return String.format("%.4f", n);
     }
 
 }

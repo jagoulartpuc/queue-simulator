@@ -36,7 +36,7 @@ public class Event implements Comparable<Event> {
     }
 
     public enum Type {
-        ARRIVAL, EXIT
+        ARRIVAL, EXIT, PASSAGE
     }
 
     @Override
