@@ -1,4 +1,4 @@
-package sma;
+package sma.domain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,14 +22,9 @@ public class Generator {
         double previous = x;
         double xi;
         for (int i = 0; i < size; i++) {
-//            if (randoms.isEmpty()) {
             xi = ((a * previous) + c) % m;
             randoms.add(xi/m);
             previous = xi;
-//            } else {
-//                double xi = ((a * randoms.get(i - 1)) + c) % m;
-//                randoms.add(xi/m);
-//            }
         }
         return randoms;
     }

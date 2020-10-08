@@ -1,4 +1,4 @@
-package sma;
+package sma.domain;
 
 public class Event implements Comparable<Event> {
     private Type type;

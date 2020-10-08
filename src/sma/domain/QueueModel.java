@@ -1,4 +1,4 @@
-package sma;
+package sma.domain;
 
 public class QueueModel {
 

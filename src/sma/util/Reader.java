@@ -1,4 +1,6 @@
-package sma;
+package sma.util;
+
+import sma.domain.QueueModel;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -10,6 +12,19 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Reader {
+
+    public static int countFileLines(String fileName) throws IOException {
+        Path path = Paths.get(fileName);
+        List<String> lines = new ArrayList<>();
+        try (Scanner sc = new Scanner(Files.newBufferedReader(path, StandardCharsets.UTF_8))) {
+            sc.useDelimiter("[\n]");
+            while (sc.hasNext()) {
+                String line = sc.nextLine();
+                lines.add(line);
+            }
+            return lines.size();
+        }
+    }
 
     public static List<QueueModel> readFile(String fileName) throws IOException {
         Path path = Paths.get(fileName);
@@ -34,8 +49,10 @@ public class Reader {
                     models.get(0).setOutTimeStart(Integer.parseInt(timeUnits[2]));
                     models.get(0).setOutTimeEnd(Integer.parseInt(timeUnits[3]));
 
-                    models.get(1).setOutTimeStart(Integer.parseInt(timeUnits[4]));
-                    models.get(1).setOutTimeEnd(Integer.parseInt(timeUnits[5]));
+                    if (models.size() != 1) {
+                        models.get(1).setOutTimeStart(Integer.parseInt(timeUnits[4]));
+                        models.get(1).setOutTimeEnd(Integer.parseInt(timeUnits[5]));
+                    }
                 }
             }
         }
