@@ -7,7 +7,7 @@ public class QueueModel {
     private char inDistribution;
     private char outDistribution;
     private int servers;
-    private int clients;
+    private int capacity;
     private int outTimeStart;
     private int outTimeEnd;
 
@@ -54,12 +54,12 @@ public class QueueModel {
         this.servers = servers;
     }
 
-    public int getClients() {
-        return clients;
+    public int getCapacity() {
+        return capacity;
     }
 
-    public void setClients(int clients) {
-        this.clients = clients;
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 
     public int getOutTimeStart() {
@@ -86,7 +86,7 @@ public class QueueModel {
                 ", inDistribution=" + inDistribution +
                 ", outDistribution=" + outDistribution +
                 ", servers=" + servers +
-                ", clients=" + clients +
+                ", capacity=" + capacity +
                 ", outTimeStart=" + outTimeStart +
                 ", outTimeEnd=" + outTimeEnd +
                 '}';

@@ -25,7 +25,7 @@ public class Reader {
                     model.setInDistribution(kendallNotation[0].charAt(0));
                     model.setOutDistribution(kendallNotation[1].charAt(0));
                     model.setServers(Integer.parseInt(kendallNotation[2]));
-                    model.setClients(Integer.parseInt(kendallNotation[3]));
+                    model.setCapacity(Integer.parseInt(kendallNotation[3]));
                     models.add(model);
                 } else {
                     String[] timeUnits = line.split(",");
