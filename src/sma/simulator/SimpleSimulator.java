@@ -22,10 +22,9 @@ public class SimpleSimulator {
 
         Generator generator = new Generator(seed, 100000);
         QueueModel model = Reader.readFile(fileName).get(0);
-
         Printer.printSimpleInputs(model, seed);
 
-        queue.add(new Event(Event.Type.ARRIVAL, 2.5));
+        queue.add(new Event(Event.Type.ARRIVAL, 1.0));
         while (contRandoms < generator.getRandoms().size()) {
             if (queue.element().getType().equals(Event.Type.ARRIVAL)) {
                 manageArrival(model, generator, queue.element().getTime());
@@ -35,7 +34,7 @@ public class SimpleSimulator {
             contRandoms++;
         }
 
-        Printer.printSimpleOutputs(stateTimes, globalTime);
+        Printer.printSimpleStates(stateTimes, globalTime);
         System.out.println("Total de clientes perdidos na fila: " + lostClients);
         System.out.println("=============================================================");
 
@@ -70,7 +69,4 @@ public class SimpleSimulator {
         queue.remove();
     }
 
-
-
 }
-

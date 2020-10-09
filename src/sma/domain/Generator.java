@@ -38,9 +38,6 @@ public class Generator {
         }
         counter++;
         return x;
-
     }
-
-
 
 }

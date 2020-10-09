@@ -1,9 +1,7 @@
 package sma.util;
 
 import sma.domain.QueueModel;
-
 import java.util.Map;
-import java.util.Queue;
 
 import static sma.util.Formatter.*;
 
@@ -29,32 +27,17 @@ public class Printer {
         System.out.println(" ");
     }
 
-    public static void printOutputs(Map<Integer, Double> stateTimes, double globalTime) {
-        System.out.println("Estado 0 da fila 1: Tempo: " + formatNumber(getStateTime(stateTimes, 0)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, getStateTime(stateTimes, 0))) + " %");
-        System.out.println("Estado 1 da fila 1: Tempo: " + formatNumber(getStateTime(stateTimes, 1)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, getStateTime(stateTimes, 1))) + " %");
-        System.out.println("Estado 2 da fila 1: Tempo: " + formatNumber(getStateTime(stateTimes, 2)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, getStateTime(stateTimes, 2))) + " %");
-        System.out.println("Estado 3 da fila 1: Tempo: " + formatNumber(getStateTime(stateTimes, 3)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, getStateTime(stateTimes, 3))) + " %");
+    public static void printSimpleStates(Map<Integer, Double> stateTimes, double globalTime) {
+        for (int i = 0; i < stateTimes.values().size(); i++){
+            System.out.println("Estado " + i + " da fila: Tempo: " + formatNumber(getStateTime(stateTimes, i)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, getStateTime(stateTimes, i))) + " %");
+        }
+        System.out.println("Tempo total: " + getTotalTime(stateTimes));
     }
 
-    public static void printSimpleOutputs(Map<Integer, Double> stateTimes, double globalTime) {
-        printOutputs(stateTimes, globalTime);
-        System.out.println("Estado 4 da fila 1: Tempo: " + formatNumber(getStateTime(stateTimes, 4)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, getStateTime(stateTimes, 4))) + " %");
-        System.out.println("Estado 5 da fila 1: Tempo: " + formatNumber(getStateTime(stateTimes, 5)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, getStateTime(stateTimes, 5))) + " %");
-
-        System.out.println("Tempo total fila 1: " + getTotalTime(stateTimes));
+    public static void printTandemStates(Map<Integer, Double> stateTimes1, Map<Integer, Double> stateTimes2, double globalTime, int lostClients1, int lostClients2) {
+        printSimpleStates(stateTimes1, globalTime);
         System.out.println(" ");
-
-    }
-
-    public static void printTandemOutputs(Map<Integer, Double> stateTimes1, Map<Integer, Double> stateTimes2, double globalTime, int lostClients1, int lostClients2) {
-        printOutputs(stateTimes1, globalTime);
-        System.out.println("Tempo total fila 1: " + getTotalTime(stateTimes1));
-        System.out.println(" ");
-        System.out.println("Estado 0 da fila 2: Tempo: " + formatNumber(getStateTime(stateTimes2, 0)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, getStateTime(stateTimes2, 0))) + " %");
-        System.out.println("Estado 1 da fila 2: Tempo: " + formatNumber(getStateTime(stateTimes2, 1)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, getStateTime(stateTimes2, 1))) + " %");
-        System.out.println("Estado 2 da fila 2: Tempo: " + formatNumber(getStateTime(stateTimes2, 2)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, getStateTime(stateTimes2, 2))) + " %");
-        System.out.println("Estado 3 da fila 2: Tempo: " + formatNumber(getStateTime(stateTimes2, 3)) + ", Probabilidade: " + formatNumber(calculateProbability(globalTime, getStateTime(stateTimes2, 3))) + " %");
-        System.out.println("Tempo total fila 2: " + getTotalTime(stateTimes2));
+        printSimpleStates(stateTimes2, globalTime);
         System.out.println(" ");
         System.out.println("Total de clientes perdidos na fila 1: " + lostClients1);
         System.out.println("Total de clientes perdidos na fila 2: " + lostClients2);

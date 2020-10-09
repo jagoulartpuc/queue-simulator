@@ -9,6 +9,8 @@ import sma.util.Reader;
 import java.io.IOException;
 import java.util.*;
 
+import static sma.util.Formatter.getStateTime;
+
 public class TandemSimulator {
 
     private Queue<Event> queue = new PriorityQueue<>();
@@ -39,7 +41,7 @@ public class TandemSimulator {
             contRandoms++;
         }
 
-        Printer.printTandemOutputs(stateTimes1, stateTimes2, globalTime, lostClients1, lostClients2);
+        Printer.printTandemStates(stateTimes1, stateTimes2, globalTime, lostClients1, lostClients2);
 
     }
 
@@ -90,30 +92,6 @@ public class TandemSimulator {
         stateTimes2.put(queue2Controller, delta + previous2);
         globalTime = eventTime;
         queue.remove();
-    }
-
-    public double calculateProbability(double totalTime, double globalTime) {
-        return (globalTime * 100) / totalTime;
-    }
-
-    public String formatNumber(double n) {
-        return String.format("%.4f", n);
-    }
-
-    public double getStateTime(Map<Integer, Double> map, int key) {
-        if (map.get(key) == null) {
-            return 0.0;
-        } else {
-            return map.get(key);
-        }
-    }
-
-    public double getTotalTime(Map<Integer, Double> states) {
-        int sum = 0;
-        for (double time: states.values()) {
-            sum+= time;
-        }
-        return sum;
     }
 
 }
