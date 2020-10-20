@@ -15,7 +15,6 @@ import static sma.util.Formatter.getStateTime;
 public class MultipleSimulator {
 
     private Queue<Event> events = new PriorityQueue<>();
-    private int contRandoms = 0;
     private double globalTime = 0;
     private Map<String, QueueModel> queueMap;
 
@@ -36,7 +35,6 @@ public class MultipleSimulator {
             } else {
                 manageExit(events.element().getOrigin(), generator, events.element().getTime());
             }
-            contRandoms++;
         } while (!generator.getRandoms().isEmpty());
 
         Printer.printOutputs(queueModels, globalTime);
