@@ -13,85 +13,84 @@ import static sma.util.Formatter.getStateTime;
 
 public class TandemSimulator {
 
-    private Queue<Event> queue = new PriorityQueue<>();
-    private int contRandoms = 0, lostClients1 = 0, lostClients2 = 0, queue1Controller = 0, queue2Controller = 0;
+    private Queue<Event> events = new PriorityQueue<>();
+    private int contRandoms = 0;
     private double globalTime = 0;
-    private Map<Integer, Double> stateTimes1 = new HashMap<>();
-    private Map<Integer, Double> stateTimes2 = new HashMap<>();
+    private QueueModel queue1;
+    private QueueModel queue2;
 
     public void runSimulation(String fileName, int seed) throws IOException {
 
-        List<QueueModel> models = Reader.readFile(fileName);
+        List<QueueModel> queues = Reader.readFile(fileName);
         Generator generator = new Generator(seed, 100000);
-        QueueModel model1 = models.get(0);
-        QueueModel model2 = models.get(1);
+        queue1 = queues.get(0);
+        queue2 = queues.get(1);
 
-        Printer.printTandemInputs(model1, model2, seed);
+        Printer.printTandemInputs(queue1, queue2, seed);
 
-        queue.add(new Event(Event.Type.ARRIVAL, 2.5));
+        events.add(new Event(Event.Type.ARRIVAL, 2.5));
         while (contRandoms < generator.getRandoms().size()) {
-            if (queue.element().getType().equals(Event.Type.ARRIVAL)) {
-                manageArrival(model1, generator, queue.element().getTime());
-            } else if (queue.element().getType().equals(Event.Type.PASSAGE)) {
-                managePassage(model1, model2, generator, queue.element().getTime());
+            if (events.element().getType().equals(Event.Type.ARRIVAL)) {
+                manageArrival(queue1, generator, events.element().getTime());
+            } else if (events.element().getType().equals(Event.Type.PASSAGE)) {
+                managePassage(queue1, queue2, generator, events.element().getTime());
 
             } else {
-                manageExit(model2, generator, queue.element().getTime());
+                manageExit(queue2, generator, events.element().getTime());
             }
             contRandoms++;
         }
 
-        Printer.printTandemStates(stateTimes1, stateTimes2, globalTime, lostClients1, lostClients2);
-
+        Printer.printOutputs(queues, globalTime);
     }
 
-    public void manageArrival(QueueModel model, Generator generator, double eventTime) {
+    public void manageArrival(QueueModel queue, Generator generator, double eventTime) {
         countTime(eventTime);
-        if (queue1Controller < model.getCapacity()) {
-            queue1Controller++;
-            if (queue1Controller <= model.getServers()) {
-                queue.add(new Event(Event.Type.PASSAGE, generator.getNextIntBetween(model.getOutTimeStart(), model.getOutTimeEnd()) + globalTime));
+        if (queue.getCounter() < queue.getCapacity() || queue.getCapacity() == Integer.MAX_VALUE) {
+            queue.incrementCounter();
+            if (queue.getCounter() <= queue.getServers()) {
+                events.add(new Event(Event.Type.PASSAGE, generator.getNextBetween(queue.getAttendenceTimeStart(), queue.getAttendenceTimeEnd()) + globalTime));
             }
         } else {
-            lostClients1++;
+            queue.incrementLostClients();
         }
-        queue.add(new Event(Event.Type.ARRIVAL, generator.getNextIntBetween(model.getInTimeStart(), model.getInTimeEnd()) + globalTime));
+        events.add(new Event(Event.Type.ARRIVAL, generator.getNextBetween(queue.getArrivalTimeStart(), queue.getArrivalTimeEnd()) + globalTime));
     }
 
-    public void managePassage(QueueModel model1, QueueModel model2, Generator generator, double eventTime) {
+    public void managePassage(QueueModel queue1, QueueModel queue2, Generator generator, double eventTime) {
         countTime(eventTime);
-        queue1Controller--;
-        if (queue1Controller >= model1.getServers()) {
-            queue.add(new Event(Event.Type.PASSAGE, generator.getNextIntBetween(model1.getOutTimeStart(), model1.getOutTimeEnd()) + globalTime));
+        queue1.decrementCounter();
+        if (queue1.getCounter() >= queue1.getServers()) {
+            events.add(new Event(Event.Type.PASSAGE, generator.getNextBetween(queue1.getAttendenceTimeStart(), queue1.getAttendenceTimeEnd()) + globalTime));
         }
-        if(queue2Controller < model2.getCapacity()) {
-            queue2Controller++;
-            if (queue2Controller <= model2.getServers()) {
-                queue.add(new Event(Event.Type.EXIT, generator.getNextIntBetween(model2.getOutTimeStart(), model2.getOutTimeEnd()) + globalTime));
+        if(queue2.getCounter() < queue2.getCapacity()) {
+            queue2.incrementCounter();
+            if (queue2.getCounter() <= queue2.getServers()) {
+                events.add(new Event(Event.Type.EXIT, generator.getNextBetween(queue2.getAttendenceTimeStart(), queue2.getAttendenceTimeEnd()) + globalTime));
             }
         } else {
-            lostClients2++;
+            queue2.incrementLostClients();
         }
 
     }
 
-    public void manageExit(QueueModel model, Generator generator, double eventTime) {
+    public void manageExit(QueueModel queue, Generator generator, double eventTime) {
         countTime(eventTime);
-        queue2Controller--;
-        if (queue2Controller >= model.getServers()) {
-            queue.add(new Event(Event.Type.EXIT, generator.getNextIntBetween(model.getOutTimeStart(), model.getOutTimeEnd()) + globalTime));
+        queue.decrementCounter();
+        if (queue.getCounter() >= queue.getServers()) {
+            events.add(new Event(Event.Type.EXIT, generator.getNextBetween(queue.getAttendenceTimeStart(), queue.getAttendenceTimeEnd()) + globalTime));
         }
     }
 
     public void countTime(double eventTime) {
         double delta = eventTime - globalTime;
-        double previous1 = getStateTime(stateTimes1, queue1Controller);
-        double previous2 = getStateTime(stateTimes2, queue2Controller);
+        double previous1 = getStateTime(queue1.getStates(), queue1.getCounter());
+        double previous2 = getStateTime(queue2.getStates(), queue2.getCounter());
 
-        stateTimes1.put(queue1Controller, delta + previous1);
-        stateTimes2.put(queue2Controller, delta + previous2);
+        queue1.getStates().put(queue1.getCounter(), delta + previous1);
+        queue2.getStates().put(queue2.getCounter(), delta + previous2);
         globalTime = eventTime;
-        queue.remove();
+        events.remove();
     }
 
 }

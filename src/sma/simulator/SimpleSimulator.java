@@ -34,7 +34,7 @@ public class SimpleSimulator {
             contRandoms++;
         }
 
-        Printer.printSimpleStates(stateTimes, globalTime);
+        Printer.printStates(model.getName(), stateTimes, globalTime);
         System.out.println("Total de clientes perdidos na fila: " + lostClients);
         System.out.println("=============================================================");
 
@@ -45,19 +45,19 @@ public class SimpleSimulator {
         if (queueController < model.getCapacity()) {
             queueController++;
             if (queueController <= model.getServers()) {
-                queue.add(new Event(Event.Type.EXIT, generator.getNextIntBetween(model.getOutTimeStart(), model.getOutTimeEnd()) + globalTime));
+                queue.add(new Event(Event.Type.EXIT, generator.getNextBetween(model.getAttendenceTimeStart(), model.getAttendenceTimeEnd()) + globalTime));
             }
         } else {
             lostClients++;
         }
-        queue.add(new Event(Event.Type.ARRIVAL, generator.getNextIntBetween(model.getInTimeStart(), model.getInTimeEnd()) + globalTime));
+        queue.add(new Event(Event.Type.ARRIVAL, generator.getNextBetween(model.getArrivalTimeStart(), model.getArrivalTimeEnd()) + globalTime));
     }
 
     public void manageExit(QueueModel model, Generator generator, double eventTime) {
         countTime(eventTime);
         queueController--;
         if (queueController >= model.getServers()) {
-            queue.add(new Event(Event.Type.EXIT, generator.getNextIntBetween(model.getOutTimeStart(), model.getOutTimeEnd()) + globalTime));
+            queue.add(new Event(Event.Type.EXIT, generator.getNextBetween(model.getAttendenceTimeStart(), model.getAttendenceTimeEnd()) + globalTime));
         }
     }
 

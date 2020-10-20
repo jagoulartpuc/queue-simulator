@@ -20,11 +20,11 @@ public class Formatter {
         }
     }
 
-    public static double getTotalTime(Map<Integer, Double> states) {
-        int sum = 0;
+    public static String getTotalTime(Map<Integer, Double> states) {
+        double sum = 0;
         for (double time: states.values()) {
             sum+= time;
         }
-        return sum;
+        return formatNumber(sum);
     }
 }

@@ -1,0 +1,12 @@
+name:Q1
+servers:2
+capacity:4
+arrival:2-3
+attendence:4-7
+connections:Q2 0.7 out 0.3
+===
+name:Q2
+servers:1
+capacity:INF
+attendence:4-8
+===

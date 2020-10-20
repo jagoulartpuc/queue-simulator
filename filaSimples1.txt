@@ -1,2 +1,6 @@
-G/G/1/5
-2,4,3,5
+name:Q1
+servers:1
+capacity:5
+arrival:2-4
+attendence:3-5
+===

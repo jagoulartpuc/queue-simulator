@@ -3,10 +3,25 @@ package sma.domain;
 public class Event implements Comparable<Event> {
     private Type type;
     private double time;
+    private String origin;
+    private String destiny;
 
     public Event(Type type, double time) {
         this.type = type;
         this.time = time;
+    }
+
+    public Event(Type type, double time, String origin) {
+        this.type = type;
+        this.time = time;
+        this.origin = origin;
+    }
+
+    public Event(Type type, double time, String origin, String destiny) {
+        this.type = type;
+        this.time = time;
+        this.origin = origin;
+        this.destiny = destiny;
     }
 
     public Type getType() {
@@ -25,6 +40,22 @@ public class Event implements Comparable<Event> {
         this.time = time;
     }
 
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    public String getDestiny() {
+        return destiny;
+    }
+
+    public void setDestiny(String destiny) {
+        this.destiny = destiny;
+    }
+
     public int compareTo(Event other) {
         if (this.time < other.time) {
             return -1;
@@ -41,8 +72,11 @@ public class Event implements Comparable<Event> {
 
     @Override
     public String toString() {
-        return "{type=" + type +
+        return "Event{" +
+                "type=" + type +
                 ", time=" + time +
+                ", origin='" + origin + '\'' +
+                ", destiny='" + destiny + '\'' +
                 '}';
     }
 }
