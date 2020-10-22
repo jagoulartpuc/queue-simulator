@@ -9,7 +9,7 @@ import static sma.util.Formatter.*;
 
 public class Printer {
 
-    public static void printProbInputs(List<QueueModel> queues, int seed) {
+    public static void printInputs(List<QueueModel> queues, int seed) {
         System.out.println("=============================================================");
         for (QueueModel queue: queues) {
             if (queue.getCapacity() == Integer.MAX_VALUE) {
@@ -23,7 +23,7 @@ public class Printer {
             if (queue.getName().equals("Q1")) {
                 System.out.println("Chegada: " + queue.getArrivalTimeStart() + "..." + queue.getArrivalTimeEnd());
             }
-            System.out.println("Passagem: " + queue.getAttendenceTimeStart() + "..." + queue.getAttendenceTimeEnd());
+            System.out.println("Atendimento: " + queue.getAttendenceTimeStart() + "..." + queue.getAttendenceTimeEnd());
         }
         System.out.println("Semente: " + seed);
     }

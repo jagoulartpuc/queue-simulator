@@ -24,7 +24,7 @@ public class Simulator {
         List<QueueModel> queueModels = Reader.readFile(fileName);
         queueMap = initQueues(queueModels);
 
-        Printer.printProbInputs(queueModels, seed);
+        Printer.printInputs(queueModels, seed);
 
         events.add(new Event(Event.Type.ARRIVAL, 1));
         while (!generator.getRandoms().isEmpty()) {
@@ -40,7 +40,7 @@ public class Simulator {
         Printer.printOutputs(queueModels, globalTime);
     }
 
-    public void manageArrival(QueueModel queue, Generator generator, double eventTime) {
+    private void manageArrival(QueueModel queue, Generator generator, double eventTime) {
         countTime(eventTime);
         if (queue.getCounter() < queue.getCapacity()) {
             queue.incrementCounter();
@@ -61,7 +61,7 @@ public class Simulator {
         events.add(new Event(Event.Type.ARRIVAL, generator.getNextBetween(queue.getArrivalTimeStart(), queue.getArrivalTimeEnd()) + globalTime));
     }
 
-    public void managePassage(String origin, String destiny, Generator generator, double eventTime) {
+    private void managePassage(String origin, String destiny, Generator generator, double eventTime) {
         countTime(eventTime);
         QueueModel originQueue = queueMap.get(origin);
         QueueModel destinyQueue = queueMap.get(destiny);
@@ -87,7 +87,7 @@ public class Simulator {
         }
     }
 
-    public void manageExit(String origin, Generator generator, double eventTime) {
+    private void manageExit(String origin, Generator generator, double eventTime) {
         countTime(eventTime);
         QueueModel queue = queueMap.get(origin);
         queue.decrementCounter();
@@ -100,7 +100,7 @@ public class Simulator {
         }
     }
 
-    public void countTime(double eventTime) {
+    private void countTime(double eventTime) {
         double delta = eventTime - globalTime;
         for (QueueModel queue: queueMap.values()) {
             double previous = getStateTime(queue.getStates(), queue.getCounter());
@@ -110,11 +110,11 @@ public class Simulator {
         events.remove();
     }
 
-    public Map<String, QueueModel> initQueues(List<QueueModel> queues) {
+    private Map<String, QueueModel> initQueues(List<QueueModel> queues) {
         return queues.stream().collect(toMap(QueueModel::getName, q -> q));
     }
 
-    public void routeEvents(Generator generator, QueueModel queue) {
+    private void routeEvents(Generator generator, QueueModel queue) {
         double rand = generator.getNext();
         double probability = 0;
         for (Connection connection: queue.getConnections()) {
