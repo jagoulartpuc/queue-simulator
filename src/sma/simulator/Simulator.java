@@ -12,7 +12,7 @@ import java.util.*;
 import static java.util.stream.Collectors.toMap;
 import static sma.util.Formatter.getStateTime;
 
-public class MultipleSimulator {
+public class Simulator {
 
     private Queue<Event> events = new PriorityQueue<>();
     private double globalTime = 0;

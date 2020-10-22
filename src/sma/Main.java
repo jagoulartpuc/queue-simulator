@@ -1,6 +1,6 @@
 package sma;
 
-import sma.simulator.MultipleSimulator;
+import sma.simulator.Simulator;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -10,7 +10,7 @@ public class Main {
         System.out.println("Digite o nome do arquivo (sem extenção): ");
         Scanner in = new Scanner(System.in);
         String name = in.nextLine();
-        (new MultipleSimulator()).runSimulation(name + ".txt", 3);
+        (new Simulator()).runSimulation(name + ".txt", 3);
 
     }
 }
