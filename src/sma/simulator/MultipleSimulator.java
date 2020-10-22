@@ -26,8 +26,8 @@ public class MultipleSimulator {
 
         Printer.printProbInputs(queueModels, seed);
 
-        events.add(new Event(Event.Type.ARRIVAL, 3));
-        do {
+        events.add(new Event(Event.Type.ARRIVAL, 1));
+        while (!generator.getRandoms().isEmpty()) {
             if (events.element().getType().equals(Event.Type.ARRIVAL)) {
                 manageArrival(queueMap.get("Q1"), generator, events.element().getTime());
             } else if (events.element().getType().equals(Event.Type.PASSAGE)) {
@@ -35,7 +35,7 @@ public class MultipleSimulator {
             } else {
                 manageExit(events.element().getOrigin(), generator, events.element().getTime());
             }
-        } while (!generator.getRandoms().isEmpty());
+        }
 
         Printer.printOutputs(queueModels, globalTime);
     }
@@ -48,7 +48,11 @@ public class MultipleSimulator {
                 if (queue.getConnections() != null) {
                     routeEvents(generator, queue);
                 } else {
-                    events.add(new Event(Event.Type.PASSAGE, generator.getNextBetween(queue.getAttendenceTimeStart(), queue.getAttendenceTimeEnd()) + globalTime, queue.getName(), "Q2"));
+                    if (queueMap.size() > 1) {
+                        events.add(new Event(Event.Type.PASSAGE, generator.getNextBetween(queue.getAttendenceTimeStart(), queue.getAttendenceTimeEnd()) + globalTime, queue.getName(), "Q2"));
+                    } else {
+                        events.add(new Event(Event.Type.EXIT, generator.getNextBetween(queue.getAttendenceTimeStart(), queue.getAttendenceTimeEnd()) + globalTime, queue.getName()));
+                    }
                 }
             }
         } else {

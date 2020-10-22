@@ -1,0 +1,47 @@
+=============================================================
+Q1: G/G/1
+Probabilidades: [{direction='Q2', prob=0.8}, {direction='Q3', prob=0.2}]
+Chegada: 1.0...4.0
+Passagem: 1.0...1.5
+Q2: G/G/3/5
+Probabilidades: [{direction='Q3', prob=0.5}, {direction='out', prob=0.2}, {direction='Q1', prob=0.3}]
+Passagem: 5.0...10.0
+Q3: G/G/2/8
+Probabilidades: [{direction='Q2', prob=0.7}, {direction='out', prob=0.3}]
+Passagem: 10.0...20.0
+Semente: 3
+ 
+Q1:
+Estado 0 da fila: Tempo: 14207,4512, Probabilidade: 35,1990 %
+Estado 1 da fila: Tempo: 20655,8070, Probabilidade: 51,1748 %
+Estado 2 da fila: Tempo: 4943,0394, Probabilidade: 12,2464 %
+Estado 3 da fila: Tempo: 537,2275, Probabilidade: 1,3310 %
+Estado 4 da fila: Tempo: 19,1735, Probabilidade: 0,0475 %
+Estado 5 da fila: Tempo: 0,5218, Probabilidade: 0,0013 %
+Tempo total: 40363,2205
+Total de clientes perdidos na fila Q1: 0
+ 
+Q2:
+Estado 0 da fila: Tempo: 34,3941, Probabilidade: 0,0852 %
+Estado 1 da fila: Tempo: 426,2202, Probabilidade: 1,0560 %
+Estado 2 da fila: Tempo: 2618,1795, Probabilidade: 6,4865 %
+Estado 3 da fila: Tempo: 8431,5724, Probabilidade: 20,8892 %
+Estado 4 da fila: Tempo: 14988,6612, Probabilidade: 37,1345 %
+Estado 5 da fila: Tempo: 13864,1931, Probabilidade: 34,3486 %
+Tempo total: 40363,2205
+Total de clientes perdidos na fila Q2: 4899
+ 
+Q3:
+Estado 0 da fila: Tempo: 13,3111, Probabilidade: 0,0330 %
+Estado 1 da fila: Tempo: 4,6573, Probabilidade: 0,0115 %
+Estado 2 da fila: Tempo: 17,2208, Probabilidade: 0,0427 %
+Estado 3 da fila: Tempo: 4,2127, Probabilidade: 0,0104 %
+Estado 4 da fila: Tempo: 18,8411, Probabilidade: 0,0467 %
+Estado 5 da fila: Tempo: 172,8201, Probabilidade: 0,4282 %
+Estado 6 da fila: Tempo: 2921,1917, Probabilidade: 7,2373 %
+Estado 7 da fila: Tempo: 13001,6768, Probabilidade: 32,2117 %
+Estado 8 da fila: Tempo: 24209,2890, Probabilidade: 59,9786 %
+Tempo total: 40363,2205
+Total de clientes perdidos na fila Q3: 6557
+ 
+=============================================================

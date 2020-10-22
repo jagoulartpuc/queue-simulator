@@ -12,19 +12,6 @@ import java.util.*;
 
 public class Reader {
 
-    public static int countFileLines(String fileName) throws IOException {
-        Path path = Paths.get(fileName);
-        List<String> lines = new ArrayList<>();
-        try (Scanner sc = new Scanner(Files.newBufferedReader(path, StandardCharsets.UTF_8))) {
-            sc.useDelimiter("[\n]");
-            while (sc.hasNext()) {
-                String line = sc.nextLine();
-                lines.add(line);
-            }
-            return lines.size();
-        }
-    }
-
     public static List<QueueModel> readFile(String fileName) throws IOException {
         Path path = Paths.get(fileName);
         List<QueueModel> queues = new ArrayList<>();

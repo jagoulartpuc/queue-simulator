@@ -9,25 +9,6 @@ import static sma.util.Formatter.*;
 
 public class Printer {
 
-    public static void printSimpleInputs(QueueModel queue, int seed) {
-        System.out.println("=============================================================");
-        System.out.println(queue.getName() + ": G/G/" + queue.getServers() + "/" + queue.getCapacity());
-        System.out.println("Chegada: " + queue.getArrivalTimeStart() + "..." + queue.getArrivalTimeEnd());
-        System.out.println("Atendimento: " + queue.getAttendenceTimeStart() + "..." + queue.getAttendenceTimeEnd());
-        System.out.println("Semente: " + seed);
-        System.out.println(" ");
-    }
-
-    public static void printTandemInputs(QueueModel queue1, QueueModel queue2, int seed) {
-        System.out.println("=============================================================");
-        System.out.println(queue1.getName() + ": G/G/" + queue1.getServers() + "/" + queue1.getCapacity());
-        System.out.println(queue2.getName() + ": G/G/" + queue2.getServers() + "/" + queue2.getCapacity());
-        System.out.println("Chegada: " + queue1.getArrivalTimeStart() + "..." + queue1.getArrivalTimeEnd());
-        System.out.println("Passagem: " + queue1.getAttendenceTimeStart() + "..." + queue1.getArrivalTimeEnd());
-        System.out.println("Atendimento: " + queue2.getAttendenceTimeStart() + "..." + queue2.getAttendenceTimeEnd());
-        System.out.println("Semente: " + seed);
-    }
-
     public static void printProbInputs(List<QueueModel> queues, int seed) {
         System.out.println("=============================================================");
         for (QueueModel queue: queues) {

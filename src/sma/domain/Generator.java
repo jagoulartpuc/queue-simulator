@@ -1,34 +1,20 @@
 package sma.domain;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 public class Generator {
 
     private List<Double> randoms;
+    private PrintWriter printWriter;
 
     //Aqui são informados os parametros para o cálculo da congruência linear
-    public Generator(int x, int size) {
+    public Generator(int x, int size) throws FileNotFoundException {
         this.randoms = calculateCongruentLinear(1664525.0, x, 4294967295.0, 1013904223, size);
-//        this.randoms =  new LinkedList<>(Arrays.asList(
-//                0.2176,
-//                0.0103
-//                , 0.1109
-//                , 0.3456
-//                , 0.991
-//                , 0.2323
-//                , 0.9211
-//                , 0.0322
-//                , 0.1211
-//                , 0.5131
-//                , 0.7208
-//                , 0.9172
-//                , 0.9922
-//                , 0.8324
-//                , 0.5011
-//                , 0.2931));
+        printWriter = new PrintWriter("randoms.txt");
+
     }
 
     public List<Double> getRandoms() {
@@ -36,7 +22,9 @@ public class Generator {
     }
 
     public double head() {
-        return randoms.get(0);
+        double first =  randoms.get(0);
+        printWriter.println("- " + first);
+        return first;
     }
 
     public List<Double> calculateCongruentLinear(double a, int x, double m, double c, int size) {

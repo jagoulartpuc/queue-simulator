@@ -1,6 +1,6 @@
 name:Q1
-servers:2
-capacity:5
-arrival:2-4
-attendence:3-5
+servers:1
+capacity:3
+arrival:1-2
+attendence:3-6
 ===
